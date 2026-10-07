@@ -10,7 +10,8 @@ const year = new Date().getFullYear();
   <ul>
     <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
     {
-      site.socials.map((social) => (
+      // Panelde liste boşaltılırsa alan dosyadan kalkar, bu yüzden "?."
+      site.socials?.map((social) => (
         <li>
           <a href={social.url} rel="me noopener" target="_blank">
             {social.label}

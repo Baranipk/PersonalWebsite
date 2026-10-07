@@ -1,0 +1,123 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+# Yönetim paneli ayarları. Buradaki alanlar src/content.config.ts ile birebir aynı olmalı.
+
+backend:
+  name: github
+  repo: Baranipk/PersonalWebsite
+  branch: main
+
+# İçeriğe bağlı olmayan dosyalar (CV gibi) buraya yüklenir
+media_folder: public/uploads
+public_folder: /uploads
+
+output:
+  # Boş bırakılan isteğe bağlı alanları dosyaya yazma (yoksa Astro şeması hata verir)
+  omit_empty_optional_fields: true
+
+collections:
+  # Blog yazıları: src/content/blog/<yazi>/index.md
+  - name: blog
+    label: Blog posts
+    label_singular: Blog post
+    folder: src/content/blog
+    path: '{{slug}}/index'
+    media_folder: ''
+    public_folder: ''
+    create: true
+    summary: '{{title}} — {{pubDate}}'
+    sortable_fields: [pubDate, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Short summary, widget: text, hint: 'One or two sentences shown in the blog list.' }
+      - { name: pubDate, label: Publish date, widget: datetime, format: 'YYYY-MM-DD', time_format: false }
+      - { name: cover, label: Cover image, widget: image, required: false }
+      - { name: tags, label: Tags, widget: list, required: false, hint: 'Separate with commas, e.g. devlog, unity' }
+      - { name: draft, label: Draft, widget: boolean, default: false, hint: 'Drafts are hidden on the live site.' }
+      - { name: body, label: Body, widget: markdown }
+
+  # Projeler: src/content/projects/<proje>/index.md
+  - name: projects
+    label: Projects
+    label_singular: Project
+    folder: src/content/projects
+    path: '{{slug}}/index'
+    media_folder: ''
+    public_folder: ''
+    create: true
+    summary: '{{title}} ({{year}})'
+    sortable_fields: [order, year, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: summary, label: Short summary, widget: text }
+      - { name: cover, label: Cover image, widget: image }
+      - { name: year, label: Year, widget: number, value_type: int }
+      - { name: role, label: My role, widget: string, hint: 'e.g. Game Designer & Programmer' }
+      - { name: engine, label: Engine, widget: string, hint: 'e.g. Unity, Unreal, Godot' }
+      - { name: duration, label: Duration, widget: string, required: false, hint: 'e.g. 3 months, 48 hours' }
+      - { name: team, label: Team size, widget: string, required: false, hint: 'e.g. 4 people, Solo' }
+      - { name: platform, label: Platform, widget: string, required: false }
+      - { name: order, label: Order, widget: number, value_type: int, default: 100, hint: 'Smaller numbers are shown first.' }
+      - name: links
+        label: Links
+        label_singular: Link
+        widget: list
+        required: false
+        summary: '{{label}}'
+        fields:
+          - { name: label, label: Label, widget: string, hint: 'e.g. itch.io, Steam, GitHub' }
+          - { name: url, label: URL, widget: string }
+      - name: videos
+        label: Videos
+        label_singular: Video
+        widget: list
+        required: false
+        hint: 'YouTube videos must be Unlisted or Public. Private videos cannot be embedded.'
+        summary: '{{title}}'
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: url, label: YouTube link, widget: string }
+      - { name: playlist, label: YouTube playlist link, widget: string, required: false, hint: 'Used only when no videos are listed above.' }
+      - name: gallery
+        label: Gallery
+        label_singular: Image
+        widget: list
+        required: false
+        fields:
+          - { name: image, label: Image, widget: image }
+          - { name: caption, label: Caption, widget: string, required: false }
+      - { name: draft, label: Draft, widget: boolean, default: false, hint: 'Drafts are hidden on the live site.' }
+      - { name: body, label: Project story, widget: markdown }
+
+  # Tekil sayfalar
+  - name: pages
+    label: Pages
+    files:
+      - name: about
+        label: About
+        file: src/content/pages/about.md
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: body, label: Body, widget: markdown }
+
+  # Site ayarları: src/data/site.json
+  - name: settings
+    label: Settings
+    files:
+      - name: site
+        label: Site settings
+        file: src/data/site.json
+        fields:
+          - { name: name, label: Your name, widget: string }
+          - { name: title, label: Job title, widget: string, hint: 'e.g. Game Designer' }
+          - { name: intro, label: Introduction, widget: text, hint: 'Shown on the home page.' }
+          - { name: email, label: Email, widget: string }
+          - { name: cv, label: CV (PDF), widget: file, required: false }
+          - name: socials
+            label: Social links
+            label_singular: Link
+            widget: list
+            required: false
+            summary: '{{label}}'
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: url, label: URL, widget: string }
