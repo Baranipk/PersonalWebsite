@@ -1,0 +1,31 @@
+---
+// Bir etikete sahip yazılar
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostItem from '../../../components/PostItem.astro';
+import { ui } from '../../../data/ui';
+import { getPosts, getTags } from '../../../lib/content';
+import { tagSlug } from '../../../lib/format';
+
+// Her etiket için bir sayfa üret
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const tags = await getTags();
+  return tags.map((tag) => ({
+    params: { tag: tag.slug },
+    props: {
+      name: tag.name,
+      posts: posts.filter((post) => post.data.tags.some((t) => tagSlug(t) === tag.slug)),
+    },
+  }));
+}
+
+const { name, posts } = Astro.props;
+---
+
+<BaseLayout title={`#${name}`}>
+  <p><a href="/blog/tags/">← {ui.blog.allTags}</a></p>
+  <h1>{ui.blog.taggedWith} #{name}</h1>
+  <div class="prose">
+    {posts.map((post) => <PostItem post={post} />)}
+  </div>
+</BaseLayout>

@@ -1,7 +1,8 @@
 ---
-// Blog listesindeki tek yazı: başlık, tarih, özet
+// Blog listesindeki tek yazı: başlık, tarih, okuma süresi, özet, etiketler
 import type { CollectionEntry } from 'astro:content';
-import { formatDate } from '../lib/format';
+import TagList from './TagList.astro';
+import { formatDate, readingTime } from '../lib/format';
 import { ui } from '../data/ui';
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { title, description, pubDate, draft } = post.data;
+const { title, description, pubDate, tags, draft } = post.data;
 ---
 
 <article class="post-item">
@@ -18,9 +19,11 @@ const { title, description, pubDate, draft } = post.data;
   </h3>
   <p class="meta muted">
     <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+    · {readingTime(post.body)} {ui.blog.minRead}
     {draft && <span class="draft-badge">{ui.blog.draft}</span>}
   </p>
-  <p>{description}</p>
+  <p class="description">{description}</p>
+  <TagList tags={tags} />
 </article>
 
 <style>
@@ -35,7 +38,7 @@ const { title, description, pubDate, draft } = post.data;
     margin: 0 0 0.5rem;
     font-size: 0.9rem;
   }
-  p {
-    margin: 0;
+  .description {
+    margin: 0 0 0.75rem;
   }
 </style>

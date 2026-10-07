@@ -11,5 +11,19 @@ const posts = await getPosts();
 <BaseLayout title={ui.blog.title} description={ui.blog.intro}>
   <h1>{ui.blog.title}</h1>
   <p class="muted">{ui.blog.intro}</p>
-  {posts.length === 0 ? <p>{ui.blog.empty}</p> : posts.map((post) => <PostItem post={post} />)}
+  <p class="links">
+    <a href="/blog/tags/">{ui.blog.allTags}</a>
+    <a href="/rss.xml">{ui.blog.rss}</a>
+  </p>
+  <div class="prose">
+    {posts.length === 0 ? <p>{ui.blog.empty}</p> : posts.map((post) => <PostItem post={post} />)}
+  </div>
 </BaseLayout>
+
+<style>
+  .links {
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.9rem;
+  }
+</style>

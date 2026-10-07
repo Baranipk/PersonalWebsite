@@ -1,0 +1,47 @@
+---
+// Etiketleri, etiket sayfalarına giden küçük bağlantılar olarak gösterir
+import { tagSlug } from '../lib/format';
+import { ui } from '../data/ui';
+
+interface Props {
+  tags: string[];
+}
+
+const tags = Astro.props.tags.filter((tag) => tagSlug(tag));
+---
+
+{
+  tags.length > 0 && (
+    <ul class="tags" aria-label={ui.blog.tags}>
+      {tags.map((tag) => (
+        <li>
+          <a href={`/blog/tags/${tagSlug(tag)}/`}>#{tag}</a>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+  }
+  a {
+    display: inline-block;
+    padding: 0.1rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--text);
+    border-color: var(--muted);
+  }
+</style>

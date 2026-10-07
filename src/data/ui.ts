@@ -36,6 +36,12 @@ export const ui = {
     intro: 'Devlogs, game jam postmortems and design notes.',
     empty: 'No posts yet.',
     draft: 'Draft',
+    minRead: 'min read',
+    tags: 'Tags',
+    allTags: 'All tags',
+    taggedWith: 'Posts tagged',
+    backToBlog: '← All posts',
+    rss: 'RSS feed',
   },
   notFound: {
     title: 'Page not found',

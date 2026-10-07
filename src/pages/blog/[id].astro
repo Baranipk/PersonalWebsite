@@ -3,8 +3,10 @@
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { formatDate } from '../../lib/format';
+import TagList from '../../components/TagList.astro';
+import { formatDate, readingTime } from '../../lib/format';
 import { getPosts } from '../../lib/content';
+import { ui } from '../../data/ui';
 
 // Her yazı için bir sayfa üret
 export async function getStaticPaths() {
@@ -13,29 +15,41 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { title, description, pubDate, cover, tags } = post.data;
+const { title, description, pubDate, cover, tags, draft } = post.data;
 const { Content } = await render(post);
 ---
 
 <BaseLayout title={title} description={description}>
   <article class="prose">
+    <p><a href="/blog/">{ui.blog.backToBlog}</a></p>
     <h1>{title}</h1>
-    <p class="muted">
+    <p class="meta muted">
       <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-      {tags.length > 0 && <span> · {tags.join(', ')}</span>}
+      · {readingTime(post.body)} {ui.blog.minRead}
+      {draft && <span class="draft-badge">{ui.blog.draft}</span>}
     </p>
+    <TagList tags={tags} />
     {cover && <Image src={cover} alt="" width={1200} class="cover" />}
-    <Content />
+    <div class="body">
+      <Content />
+    </div>
   </article>
 </BaseLayout>
 
 <style>
   .prose {
     margin: 0 auto;
+    font-size: 1.0625rem;
+  }
+  .meta {
+    margin-top: 0;
   }
   .cover {
     width: 100%;
     border-radius: var(--radius);
-    margin: 1.5rem 0;
+    margin: 1.5rem 0 0;
+  }
+  .body {
+    margin-top: 2rem;
   }
 </style>
