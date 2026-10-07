@@ -25,7 +25,7 @@ const { Content } = await render(post);
     <h1>{title}</h1>
     <p class="meta muted">
       <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-      · {readingTime(post.body)} {ui.blog.minRead}
+      {' · '}{readingTime(post.body)} {ui.blog.minRead}
       {draft && <span class="draft-badge">{ui.blog.draft}</span>}
     </p>
     <TagList tags={tags} />

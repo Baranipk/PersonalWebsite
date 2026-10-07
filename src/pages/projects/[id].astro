@@ -115,12 +115,17 @@ const info = [
     width: 100%;
     border-radius: var(--radius);
   }
-  /* Geniş ekranda açıklama solda, bilgi kutusu sağda; dar ekranda alt alta */
+  /* Geniş ekranda açıklama solda, bilgi kutusu sağda; dar ekranda bilgi kutusu üstte */
   .layout {
     display: grid;
     gap: 2rem;
     grid-template-columns: 1fr;
   }
+  aside {
+    order: -1;
+    align-self: start;
+  }
+  /* Bu blok yukarıdaki "order" kuralından sonra gelmeli, yoksa ezilir */
   @media (min-width: 52rem) {
     .layout {
       grid-template-columns: minmax(0, 1fr) 18rem;
@@ -128,10 +133,6 @@ const info = [
     aside {
       order: 2;
     }
-  }
-  aside {
-    order: -1;
-    align-self: start;
   }
   .prose > :first-child {
     margin-top: 0;

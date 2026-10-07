@@ -19,7 +19,7 @@ const { title, description, pubDate, tags, draft } = post.data;
   </h3>
   <p class="meta muted">
     <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-    · {readingTime(post.body)} {ui.blog.minRead}
+    {' · '}{readingTime(post.body)} {ui.blog.minRead}
     {draft && <span class="draft-badge">{ui.blog.draft}</span>}
   </p>
   <p class="description">{description}</p>
