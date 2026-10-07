@@ -10,6 +10,16 @@ backend:
 media_folder: public/uploads
 public_folder: /uploads
 
+media_libraries:
+  # Stok fotoğrafları kapat: görseller her zaman bilgisayardan yüklenip repoda saklanır
+  stock_assets:
+    providers: []
+
+# Klasör adları yalnızca İngilizce harflerle: "Deneme Günlük" → "deneme-gunluk"
+slug:
+  encoding: ascii
+  clean_accents: true
+
 output:
   # Boş bırakılan isteğe bağlı alanları dosyaya yazma (yoksa Astro şeması hata verir)
   omit_empty_optional_fields: true
