@@ -1,0 +1,41 @@
+---
+// Tek blog yazısı
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../lib/format';
+import { getPosts } from '../../lib/content';
+
+// Her yazı için bir sayfa üret
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, cover, tags } = post.data;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="prose">
+    <h1>{title}</h1>
+    <p class="muted">
+      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+      {tags.length > 0 && <span> · {tags.join(', ')}</span>}
+    </p>
+    {cover && <Image src={cover} alt="" width={1200} class="cover" />}
+    <Content />
+  </article>
+</BaseLayout>
+
+<style>
+  .prose {
+    margin: 0 auto;
+  }
+  .cover {
+    width: 100%;
+    border-radius: var(--radius);
+    margin: 1.5rem 0;
+  }
+</style>

@@ -1,0 +1,94 @@
+---
+// Tek proje sayfası. Bilgi kutusu, galeri ve video oynatıcı sonraki aşamalarda gelişecek.
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ui } from '../../data/ui';
+import { getProjects } from '../../lib/content';
+
+// Her proje için bir sayfa üret
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { id: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { title, summary, cover, links } = project.data;
+const { Content } = await render(project);
+
+// Bilgi kutusundaki satırlar (boş olanlar gösterilmez)
+const info = [
+  [ui.projects.info.year, project.data.year],
+  [ui.projects.info.role, project.data.role],
+  [ui.projects.info.engine, project.data.engine],
+  [ui.projects.info.duration, project.data.duration],
+  [ui.projects.info.team, project.data.team],
+  [ui.projects.info.platform, project.data.platform],
+].filter(([, value]) => value);
+---
+
+<BaseLayout title={title} description={summary}>
+  <article>
+    <h1>{title}</h1>
+    <p class="muted">{summary}</p>
+    <Image src={cover} alt="" width={1200} class="cover" />
+
+    <dl class="info">
+      {
+        info.map(([label, value]) => (
+          <div>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {
+      links.length > 0 && (
+        <section>
+          <h2>{ui.projects.links}</h2>
+          <ul>
+            {links.map((link) => (
+              <li>
+                <a href={link.url} target="_blank" rel="noopener">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .cover {
+    width: 100%;
+    border-radius: var(--radius);
+    margin: 1.5rem 0;
+  }
+  .info {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+  }
+  dt {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  dd {
+    margin: 0;
+    font-weight: 600;
+  }
+</style>

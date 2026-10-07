@@ -1,0 +1,15 @@
+---
+// Blog listesi: tam metin değil, özet
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostItem from '../../components/PostItem.astro';
+import { ui } from '../../data/ui';
+import { getPosts } from '../../lib/content';
+
+const posts = await getPosts();
+---
+
+<BaseLayout title={ui.blog.title} description={ui.blog.intro}>
+  <h1>{ui.blog.title}</h1>
+  <p class="muted">{ui.blog.intro}</p>
+  {posts.length === 0 ? <p>{ui.blog.empty}</p> : posts.map((post) => <PostItem post={post} />)}
+</BaseLayout>

@@ -1,0 +1,76 @@
+---
+// Ana sayfa: tanıtım, öne çıkan projeler, son yazılar
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import PostItem from '../components/PostItem.astro';
+import site from '../data/site.json';
+import { ui } from '../data/ui';
+import { getPosts, getProjects } from '../lib/content';
+
+const projects = (await getProjects()).slice(0, 3);
+const posts = (await getPosts()).slice(0, 3);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <h1>{site.name}</h1>
+    <p class="title">{site.title}</p>
+    <p class="intro prose">{site.intro}</p>
+    <p class="actions">
+      {site.cv && <a class="button" href={site.cv} download>{ui.home.downloadCv}</a>}
+      <a href={`mailto:${site.email}`}>{ui.home.contact}</a>
+    </p>
+  </section>
+
+  <section>
+    <h2>{ui.home.featuredProjects}</h2>
+    <ul class="grid">
+      {
+        projects.map((project) => (
+          <li>
+            <ProjectCard project={project} />
+          </li>
+        ))
+      }
+    </ul>
+    <p><a href="/projects/">{ui.home.allProjects}</a></p>
+  </section>
+
+  <section>
+    <h2>{ui.home.latestPosts}</h2>
+    {posts.map((post) => <PostItem post={post} />)}
+    <p><a href="/blog/">{ui.home.allPosts}</a></p>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 2rem 0 3rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
+    margin: 0;
+  }
+  .title {
+    font-size: 1.25rem;
+    color: var(--muted);
+    margin: 0.25rem 0 1rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+  .button {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  section + section {
+    margin-top: 3rem;
+  }
+</style>

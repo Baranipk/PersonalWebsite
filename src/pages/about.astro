@@ -1,0 +1,16 @@
+---
+// Hakkımda: içerik src/content/pages/about.md dosyasından gelir
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const about = await getEntry('pages', 'about');
+if (!about) throw new Error('src/content/pages/about.md bulunamadı');
+const { Content } = await render(about);
+---
+
+<BaseLayout title={about.data.title}>
+  <article class="prose">
+    <h1>{about.data.title}</h1>
+    <Content />
+  </article>
+</BaseLayout>

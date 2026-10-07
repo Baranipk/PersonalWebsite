@@ -1,0 +1,72 @@
+---
+// Proje ızgarasındaki tek kart
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { ui } from '../data/ui';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, summary, cover, year, engine, draft } = project.data;
+---
+
+<article class="card">
+  <Image src={cover} alt="" width={640} />
+  <div class="body">
+    <h3>
+      <a href={`/projects/${project.id}/`}>{title}</a>
+    </h3>
+    <p class="meta muted">
+      {year} · {engine}
+      {draft && <span class="draft-badge">{ui.blog.draft}</span>}
+    </p>
+    <p>{summary}</p>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .body {
+    padding: 1rem;
+  }
+  h3 {
+    margin: 0 0 0.25rem;
+  }
+  h3 a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  /* Kartın tamamı tıklanabilir olsun */
+  h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .card:focus-within {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+  h3 a:focus-visible {
+    outline: none;
+  }
+  .meta {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+  }
+  p {
+    margin: 0;
+  }
+</style>

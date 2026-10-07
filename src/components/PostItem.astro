@@ -1,0 +1,41 @@
+---
+// Blog listesindeki tek yazı: başlık, tarih, özet
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '../lib/format';
+import { ui } from '../data/ui';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, draft } = post.data;
+---
+
+<article class="post-item">
+  <h3>
+    <a href={`/blog/${post.id}/`}>{title}</a>
+  </h3>
+  <p class="meta muted">
+    <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+    {draft && <span class="draft-badge">{ui.blog.draft}</span>}
+  </p>
+  <p>{description}</p>
+</article>
+
+<style>
+  .post-item {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    margin: 0 0 0.25rem;
+  }
+  .meta {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+  }
+  p {
+    margin: 0;
+  }
+</style>

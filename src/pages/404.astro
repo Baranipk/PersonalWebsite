@@ -1,0 +1,11 @@
+---
+// Bulunamayan sayfa
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ui } from '../data/ui';
+---
+
+<BaseLayout title={ui.notFound.title}>
+  <h1>{ui.notFound.title}</h1>
+  <p>{ui.notFound.text}</p>
+  <p><a href="/">{ui.notFound.back}</a></p>
+</BaseLayout>
