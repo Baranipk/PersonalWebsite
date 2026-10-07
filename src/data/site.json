@@ -1,0 +1,12 @@
+{
+  "name": "Your Name",
+  "title": "Game Designer",
+  "intro": "I design and build games. This is a placeholder introduction — replace it from the admin panel.",
+  "email": "you@example.com",
+  "cv": "",
+  "socials": [
+    { "label": "itch.io", "url": "https://itch.io" },
+    { "label": "GitHub", "url": "https://github.com/Baranipk" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com" }
+  ]
+}

@@ -1,0 +1,44 @@
+---
+// Alt bilgi: e-posta ve sosyal bağlantılar
+import site from '../data/site.json';
+import { ui } from '../data/ui';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <ul>
+    <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+    {
+      site.socials.map((social) => (
+        <li>
+          <a href={social.url} rel="me noopener" target="_blank">
+            {social.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="muted">© {year} {site.name} · {ui.footer.builtWith}</p>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+  p {
+    margin: 0;
+  }
+</style>

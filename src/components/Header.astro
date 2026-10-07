@@ -1,0 +1,71 @@
+---
+// Üst menü
+import site from '../data/site.json';
+import { ui } from '../data/ui';
+
+const links = [
+  { href: '/', label: ui.nav.home },
+  { href: '/projects/', label: ui.nav.projects },
+  { href: '/blog/', label: ui.nav.blog },
+  { href: '/about/', label: ui.nav.about },
+];
+
+// Bulunulan sayfanın menü bağlantısını işaretle
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header class="site-header">
+  <a class="brand" href="/">{site.name}</a>
+  <nav aria-label="Main">
+    <ul>
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 1rem;
+    width: 100%;
+  }
+  .brand {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+</style>
