@@ -14,6 +14,16 @@ links:
     url: https://itch.io
   - label: GitHub
     url: https://github.com
+# Örnek videolar (Blender açık filmleri). Kendi oynanış videolarınızla değiştirin.
+videos:
+  - title: "Gameplay trailer (sample: Big Buck Bunny)"
+    url: https://www.youtube.com/watch?v=aqz-KE-bpKQ
+  - title: "Level walkthrough (sample: Sintel)"
+    url: https://youtu.be/eRsGyueVLvQ
+  - title: "Boss fight (sample: Tears of Steel)"
+    url: https://www.youtube.com/embed/R6MlUcmOul8
+  - title: "Devlog video (sample: Spring)"
+    url: https://www.youtube.com/watch?v=WhWc3b3KhnY&t=30s
 gallery:
   - image: ./screenshot-1.png
     caption: Example screenshot caption
