@@ -28,6 +28,7 @@ export const ui = {
       platform: 'Platform',
     },
     backToProjects: '← All projects',
+    play: 'Play video',
     links: 'Links',
     gallery: 'Gallery',
     videos: 'Videos',

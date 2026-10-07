@@ -1,9 +1,10 @@
 ---
-// Tek proje sayfası: kapak (3. aşamada video oynatıcı), açıklama, bilgi kutusu, galeri
-import { Image } from 'astro:assets';
+// Tek proje sayfası: video oynatıcı (yoksa kapak), açıklama, bilgi kutusu, galeri
+import { Image, getImage } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Gallery from '../../components/Gallery.astro';
+import VideoPlayer from '../../components/VideoPlayer.astro';
 import { ui } from '../../data/ui';
 import { getProjects } from '../../lib/content';
 
@@ -14,8 +15,12 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { title, summary, cover, links, gallery, draft } = project.data;
+const { title, summary, cover, links, gallery, videos, playlist, draft } = project.data;
 const { Content } = await render(project);
+
+// Video ya da oynatma listesi varsa kapak yerine oynatıcı gösterilir
+const hasVideo = videos.length > 0 || Boolean(playlist);
+const posterImage = await getImage({ src: cover, width: 1280 });
 
 // Bilgi kutusundaki satırlar (boş olanlar gösterilmez)
 const info = [
@@ -37,7 +42,20 @@ const info = [
     </h1>
     <p class="summary muted">{summary}</p>
 
-    <Image src={cover} alt="" width={1600} class="cover" />
+    <div class="media">
+      {
+        hasVideo ? (
+          <VideoPlayer
+            videos={videos}
+            playlist={playlist}
+            fallbackPoster={posterImage.src}
+            projectTitle={title}
+          />
+        ) : (
+          <Image src={cover} alt="" width={1600} class="cover" />
+        )
+      }
+    </div>
 
     <div class="layout">
       <div class="prose">
@@ -90,10 +108,12 @@ const info = [
     font-size: 1.125rem;
     margin-top: 0;
   }
+  .media {
+    margin: 1.5rem 0 2rem;
+  }
   .cover {
     width: 100%;
     border-radius: var(--radius);
-    margin: 1.5rem 0 2rem;
   }
   /* Geniş ekranda açıklama solda, bilgi kutusu sağda; dar ekranda alt alta */
   .layout {
