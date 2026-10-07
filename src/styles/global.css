@@ -3,14 +3,18 @@
   color-scheme: dark;
   --bg: #0e1014; /* sayfa zemini */
   --surface: #171a21; /* kartlar, kutular */
+  --surface-2: #1e222b; /* kartın üzerine gelinince */
   --text: #e9ebf0; /* ana metin */
   --muted: #9ba3b3; /* ikincil metin (tarih, açıklama) */
   --border: #2a2f3a; /* çizgiler */
   --accent: #ff8552; /* bağlantılar, düğmeler */
+  --accent-soft: rgb(255 133 82 / 0.12); /* vurgu renginin çok açık hali */
   --font-body: 'Inter Variable', system-ui, sans-serif;
   --font-head: 'Space Grotesk Variable', system-ui, sans-serif;
   --max-width: 72rem;
   --radius: 8px;
+  --radius-lg: 14px;
+  --header-height: 4rem; /* yapışkan menünün yüksekliği */
 }
 
 *,
@@ -21,9 +25,12 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Sayfa içi bağlantılarda başlık yapışkan menünün altında kalmasın */
+  scroll-padding-top: calc(var(--header-height) + 1rem);
 }
 
 body {
+  position: relative;
   margin: 0;
   background: var(--bg);
   color: var(--text);
@@ -32,6 +39,19 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+/* Arka plan: üstte hafif turuncu ışık ve çok ince bir doku */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60rem 30rem at 15% -10%, rgb(255 133 82 / 0.1), transparent 70%),
+    radial-gradient(ellipse 50rem 30rem at 100% 0%, rgb(120 140 255 / 0.06), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 main {
@@ -50,6 +70,7 @@ img {
 
 a {
   color: var(--accent);
+  text-underline-offset: 0.2em;
 }
 
 h1,
@@ -67,18 +88,22 @@ h4 {
   outline-offset: 2px;
 }
 
-/* Hareketi azalt ayarına saygı */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-    scroll-behavior: auto !important;
-  }
+::selection {
+  background: var(--accent);
+  color: var(--bg);
 }
 
-/* Yalnızca ekran okuyucular ve klavye için "içeriğe atla" bağlantısı */
+/* Yalnızca ekran okuyucular için (görünmez ama okunur) */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Klavye kullanıcıları için "içeriğe atla" bağlantısı */
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -86,18 +111,43 @@ h4 {
 .skip-link:focus {
   left: 1rem;
   top: 1rem;
-  z-index: 10;
+  z-index: 100;
   background: var(--surface);
   padding: 0.5rem 1rem;
 }
 
-/* Okunur satır uzunluğu (yaklaşık 70 karakter) */
-.prose {
-  max-width: 70ch;
-}
-
 .muted {
   color: var(--muted);
+}
+
+/* Düğmeler: .button (turuncu) ve .button.ghost (çerçeveli) */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.2rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 0.15s,
+    background-color 0.15s,
+    color 0.15s;
+}
+.button:hover {
+  transform: translateY(-2px);
+}
+.button.ghost {
+  background: rgb(14 16 20 / 0.5);
+  color: var(--text);
+  border-color: var(--border);
+}
+.button.ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* Kart ızgarası (projeler) */
@@ -107,6 +157,20 @@ h4 {
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
   padding: 0;
   list-style: none;
+}
+
+/* Bölüm başlığı + sağda "tümü" bağlantısı */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.25rem;
+}
+.section-head h2 {
+  margin: 0;
+  font-size: 1.6rem;
 }
 
 .draft-badge {
@@ -120,4 +184,169 @@ h4 {
   border-radius: var(--radius);
   background: var(--accent);
   color: var(--bg);
+}
+
+/* ---------- Uzun metin (blog yazısı, proje hikâyesi, hakkımda) ---------- */
+
+/* Okunur satır uzunluğu (yaklaşık 70 karakter) */
+.prose {
+  max-width: 70ch;
+  line-height: 1.75;
+}
+.prose h2,
+.prose h3 {
+  position: relative;
+  margin: 2.2em 0 0.6em;
+}
+.prose h2 {
+  font-size: 1.6rem;
+}
+.prose h3 {
+  font-size: 1.25rem;
+}
+.prose p,
+.prose ul,
+.prose ol {
+  margin: 0 0 1.2em;
+}
+.prose li + li {
+  margin-top: 0.35em;
+}
+.prose img {
+  border-radius: var(--radius);
+  margin: 1.5em 0;
+}
+.prose blockquote {
+  margin: 1.5em 0;
+  padding: 0.75em 1.25em;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--accent-soft);
+  color: var(--text);
+}
+.prose blockquote > :last-child {
+  margin-bottom: 0;
+}
+.prose code {
+  font-size: 0.9em;
+  padding: 0.15em 0.4em;
+  border-radius: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.prose pre {
+  margin: 1.5em 0;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.prose pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.prose hr {
+  margin: 2.5em 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+.prose table {
+  width: 100%;
+  margin: 1.5em 0;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.prose th,
+.prose td {
+  padding: 0.5em 0.75em;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.prose th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Başlığın yanındaki "#" bağlantısı (üzerine gelince görünür) */
+.heading-anchor {
+  margin-left: 0.4em;
+  color: var(--muted);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.prose h2:hover .heading-anchor,
+.prose h3:hover .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* ---------- Hareket ---------- */
+
+/* Kaydırınca beliren içerik. Yalnızca destekleyen tarayıcılarda ve hareket isteyenlerde;
+   desteklemeyen tarayıcıda içerik her zaman görünür kalır. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Okuma ilerleme çubuğu (blog yazıları). Sayfa kaydırıldıkça dolar; JavaScript gerekmez. */
+.reading-progress {
+  display: none;
+}
+@supports (animation-timeline: scroll()) {
+  .reading-progress {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    height: 3px;
+    background: var(--accent);
+    transform-origin: left;
+    animation: progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Hareketi azalt ayarına saygı */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  /* Animasyonsuz ilerleme çubuğu hep dolu görünürdü; gizle */
+  .reading-progress {
+    display: none !important;
+  }
 }
