@@ -6,11 +6,16 @@ backend:
   repo: Baranipk/PersonalWebsite
   branch: main
 
-# İçeriğe bağlı olmayan dosyalar (CV gibi) buraya yüklenir
-media_folder: public/uploads
-public_folder: /uploads
+# Ortak görsel klasörü. Yol "/" ile başladığı için Astro bu görselleri de bulur ve küçültür.
+# (Yazı ve proje görselleri normalde içeriğin kendi klasörüne kaydedilir.)
+media_folder: src/assets/uploads
+public_folder: /src/assets/uploads
 
 media_libraries:
+  default:
+    config:
+      # Yüklenen dosyanın adını sadeleştir: "Ekran Görüntüsü 1.png" → "ekran-goruntusu-1.png"
+      slugify_filename: true
   # Stok fotoğrafları kapat: görseller her zaman bilgisayardan yüklenip repoda saklanır
   stock_assets:
     providers: []
@@ -130,7 +135,8 @@ collections:
           - { name: title, label: Job title, widget: string, hint: 'e.g. Game Designer' }
           - { name: intro, label: Introduction, widget: text, hint: 'Shown on the home page.' }
           - { name: email, label: Email, widget: string }
-          - { name: cv, label: CV (PDF), widget: file, required: false }
+          # CV olduğu gibi indirilebilmeli, bu yüzden public klasörüne gider
+          - { name: cv, label: CV (PDF), widget: file, required: false, media_folder: /public/uploads, public_folder: /uploads, accept: .pdf }
           - name: socials
             label: Social links
             label_singular: Link
