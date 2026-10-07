@@ -10,8 +10,8 @@ export async function GET(context: APIContext) {
   return rss({
     title: `${site.name} — ${ui.blog.title}`,
     description: ui.blog.intro,
-    // Domain astro.config.mjs içine yazılana kadar yerel adres kullanılır
-    site: context.site ?? 'http://localhost:4321',
+    // Adres astro.config.mjs içindeki "site" ayarından gelir
+    site: context.site!,
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,

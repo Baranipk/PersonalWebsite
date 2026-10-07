@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  // Domain belli olunca buraya yazılacak (RSS ve site haritası için gerekli).
-  // site: 'https://ornek.com',
+  // Sitenin adresi (RSS ve site haritası tam adresleri buradan üretir)
+  site: 'https://baranipek.com',
   integrations: [sitemap()],
 });
