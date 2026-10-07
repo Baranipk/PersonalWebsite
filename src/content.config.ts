@@ -1,5 +1,5 @@
 // İçerik şemaları. Buradaki alanlar public/admin/config.yml ile birebir aynı olmalı.
-import { defineCollection } from 'astro:content';
+import { defineCollection, type ImageFunction } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { getPlaylistId, getYouTubeId } from './lib/youtube';
@@ -11,6 +11,14 @@ const youtubeVideo = z
 const youtubePlaylist = z
   .string()
   .refine((url) => getPlaylistId(url), 'Not a valid YouTube playlist link (needs "?list=...")');
+
+// Görseller içeriğin yanında durmalı; internet bağlantısı (https://...) kabul edilmez
+const localImage = (image: ImageFunction) =>
+  image().refine(
+    // Astro bu aşamada değerin başına kendi işaretini ekler; bu yüzden "://" aranır
+    (value) => !(typeof value === 'string' && value.includes('://')),
+    'Use an uploaded image file, not a web link. Upload the image in the admin panel instead.',
+  );
 
 // Blog yazıları: src/content/blog/<yazi>/index.md
 const blog = defineCollection({
@@ -25,7 +33,7 @@ const blog = defineCollection({
       title: z.string(),
       description: z.string(),
       pubDate: z.coerce.date(),
-      cover: image().optional(),
+      cover: localImage(image).optional(),
       tags: z.array(z.string()).default([]),
       draft: z.boolean().default(false),
     }),
@@ -42,7 +50,7 @@ const projects = defineCollection({
     z.object({
       title: z.string(),
       summary: z.string(),
-      cover: image(),
+      cover: localImage(image),
       // Bilgi kutusu
       year: z.number().int(),
       role: z.string(),
@@ -54,7 +62,7 @@ const projects = defineCollection({
       links: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
       videos: z.array(z.object({ title: z.string(), url: youtubeVideo })).default([]),
       playlist: youtubePlaylist.optional(),
-      gallery: z.array(z.object({ image: image(), caption: z.string().optional() })).default([]),
+      gallery: z.array(z.object({ image: localImage(image), caption: z.string().optional() })).default([]),
       draft: z.boolean().default(false),
     }),
 });
