@@ -2,6 +2,15 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { getPlaylistId, getYouTubeId } from './lib/youtube';
+
+// YouTube bağlantısı alanları: geçersiz bağlantı derlemede açık bir hata verir
+const youtubeVideo = z
+  .string()
+  .refine((url) => getYouTubeId(url), 'Not a valid YouTube video link');
+const youtubePlaylist = z
+  .string()
+  .refine((url) => getPlaylistId(url), 'Not a valid YouTube playlist link (needs "?list=...")');
 
 // Blog yazıları: src/content/blog/<yazi>/index.md
 const blog = defineCollection({
@@ -43,8 +52,8 @@ const projects = defineCollection({
       platform: z.string().optional(),
       order: z.number().default(100),
       links: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
-      videos: z.array(z.object({ title: z.string(), url: z.string().url() })).default([]),
-      playlist: z.string().url().optional(),
+      videos: z.array(z.object({ title: z.string(), url: youtubeVideo })).default([]),
+      playlist: youtubePlaylist.optional(),
       gallery: z.array(z.object({ image: image(), caption: z.string().optional() })).default([]),
       draft: z.boolean().default(false),
     }),
