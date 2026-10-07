@@ -6,6 +6,7 @@ export const ui = {
     projects: 'Projects',
     blog: 'Blog',
     about: 'About',
+    menu: 'Menu',
   },
   home: {
     featuredProjects: 'Featured projects',
@@ -14,6 +15,8 @@ export const ui = {
     allPosts: 'All posts →',
     downloadCv: 'Download CV',
     contact: 'Get in touch',
+    viewProjects: 'View my projects',
+    featuredProject: 'Featured project',
   },
   projects: {
     title: 'Projects',
@@ -28,6 +31,9 @@ export const ui = {
       platform: 'Platform',
     },
     backToProjects: '← All projects',
+    viewProject: 'View project',
+    previous: 'Previous project',
+    next: 'Next project',
     play: 'Play video',
     links: 'Links',
     gallery: 'Gallery',
@@ -44,6 +50,9 @@ export const ui = {
     taggedWith: 'Posts tagged',
     backToBlog: '← All posts',
     rss: 'RSS feed',
+    toc: 'On this page',
+    older: 'Older post',
+    newer: 'Newer post',
   },
   notFound: {
     title: 'Page not found',
@@ -53,5 +62,11 @@ export const ui = {
   footer: {
     builtWith: 'Built with Astro',
   },
+  gallery: {
+    previous: 'Previous image',
+    next: 'Next image',
+    close: 'Close',
+  },
   skipToContent: 'Skip to content',
+  backToTop: 'Back to top',
 };
