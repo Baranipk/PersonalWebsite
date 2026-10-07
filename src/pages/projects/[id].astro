@@ -1,20 +1,26 @@
 ---
 // Tek proje sayfası: video oynatıcı (yoksa kapak), açıklama, bilgi kutusu, galeri
-import { Image, getImage } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlurImage from '../../components/BlurImage.astro';
 import Gallery from '../../components/Gallery.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import SocialIcon from '../../components/SocialIcon.astro';
 import VideoPlayer from '../../components/VideoPlayer.astro';
 import { ui } from '../../data/ui';
 import { getProjects } from '../../lib/content';
 
-// Her proje için bir sayfa üret
+// Her proje için bir sayfa üret; önceki ve sonraki projeyi de ver
 export async function getStaticPaths() {
   const projects = await getProjects();
-  return projects.map((project) => ({ params: { id: project.id }, props: { project } }));
+  return projects.map((project, index) => ({
+    params: { id: project.id },
+    props: { project, prev: projects[index - 1], next: projects[index + 1] },
+  }));
 }
 
-const { project } = Astro.props;
+const { project, prev, next } = Astro.props;
 const { title, summary, cover, links, gallery, videos, playlist, draft } = project.data;
 const { Content } = await render(project);
 
@@ -33,7 +39,7 @@ const info = [
 ].filter(([, value]) => value);
 ---
 
-<BaseLayout title={title} description={summary}>
+<BaseLayout title={title} description={summary} image={cover}>
   <article>
     <p><a href="/projects/">{ui.projects.backToProjects}</a></p>
     <h1>
@@ -42,7 +48,8 @@ const info = [
     </h1>
     <p class="summary muted">{summary}</p>
 
-    <div class="media">
+    <!-- Proje kartındaki kapak, sayfa geçişinde buraya "akar" -->
+    <div class="media" transition:name={`cover-${project.id}`}>
       {
         hasVideo ? (
           <VideoPlayer
@@ -52,7 +59,7 @@ const info = [
             projectTitle={title}
           />
         ) : (
-          <Image src={cover} alt="" width={1600} class="cover" />
+          <BlurImage src={cover} alt="" width={1600} class="cover" loading="eager" />
         )
       }
     </div>
@@ -63,67 +70,76 @@ const info = [
       </div>
 
       <aside>
-        <dl class="info">
+        <div class="sticky">
+          <dl class="info">
+            {
+              info.map(([label, value]) => (
+                <div>
+                  <dt>{label}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))
+            }
+          </dl>
           {
-            info.map(([label, value]) => (
-              <div>
-                <dt>{label}</dt>
-                <dd>{value}</dd>
-              </div>
-            ))
+            links.length > 0 && (
+              <ul class="links" aria-label={ui.projects.links}>
+                {links.map((link) => (
+                  <li>
+                    <a class="button ghost" href={link.url} target="_blank" rel="noopener">
+                      <SocialIcon label={link.label} url={link.url} size={18} />
+                      {link.label}
+                      <span class="arrow" aria-hidden="true">↗</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )
           }
-        </dl>
-        {
-          links.length > 0 && (
-            <ul class="links" aria-label={ui.projects.links}>
-              {links.map((link) => (
-                <li>
-                  <a class="button" href={link.url} target="_blank" rel="noopener">
-                    {link.label} ↗
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )
-        }
+        </div>
       </aside>
     </div>
 
     {
       gallery.length > 0 && (
-        <section>
+        <section class="gallery-section">
           <h2>{ui.projects.gallery}</h2>
           <Gallery items={gallery} title={title} />
         </section>
       )
     }
+
+    <PrevNext
+      prev={prev && { href: `/projects/${prev.id}/`, title: prev.data.title, label: ui.projects.previous }}
+      next={next && { href: `/projects/${next.id}/`, title: next.data.title, label: ui.projects.next }}
+    />
   </article>
 </BaseLayout>
 
 <style>
   h1 {
     margin-bottom: 0.25rem;
+    font-size: clamp(2rem, 5vw, 3rem);
   }
   .summary {
     font-size: 1.125rem;
     margin-top: 0;
   }
   .media {
-    margin: 1.5rem 0 2rem;
+    margin: 1.5rem 0 2.5rem;
   }
-  .cover {
-    width: 100%;
-    border-radius: var(--radius);
+  .media :global(.cover) {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
   }
   /* Geniş ekranda açıklama solda, bilgi kutusu sağda; dar ekranda bilgi kutusu üstte */
   .layout {
     display: grid;
-    gap: 2rem;
+    gap: 2.5rem;
     grid-template-columns: 1fr;
   }
   aside {
     order: -1;
-    align-self: start;
   }
   /* Bu blok yukarıdaki "order" kuralından sonra gelmeli, yoksa ezilir */
   @media (min-width: 52rem) {
@@ -133,23 +149,28 @@ const info = [
     aside {
       order: 2;
     }
+    /* Metin kaydırılırken bilgi kutusu görünür kalır */
+    .sticky {
+      position: sticky;
+      top: calc(var(--header-height) + 1.5rem);
+    }
   }
-  .prose > :first-child {
+  .prose > :global(:first-child) {
     margin-top: 0;
   }
   .info {
     display: grid;
-    gap: 0.75rem;
+    gap: 0.9rem;
     margin: 0;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
   }
   dt {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     color: var(--muted);
   }
   dd {
@@ -157,27 +178,20 @@ const info = [
     font-weight: 600;
   }
   .links {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: 0.5rem;
     margin: 1rem 0 0;
     padding: 0;
     list-style: none;
   }
-  .button {
-    display: block;
-    text-align: center;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--accent);
+  .links .button {
+    width: 100%;
     border-radius: var(--radius);
-    text-decoration: none;
-    font-weight: 600;
   }
-  .button:hover {
-    background: var(--accent);
-    color: var(--bg);
+  .arrow {
+    margin-left: auto;
   }
-  section {
-    margin-top: 3rem;
+  .gallery-section {
+    margin-top: 4rem;
   }
 </style>

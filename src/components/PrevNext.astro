@@ -1,0 +1,78 @@
+---
+// Sayfanın sonunda önceki / sonraki içeriğe geçiş bağlantıları
+interface Link {
+  href: string;
+  title: string;
+  label: string; // "Previous project" gibi
+}
+
+interface Props {
+  prev?: Link;
+  next?: Link;
+}
+
+const { prev, next } = Astro.props;
+---
+
+{
+  (prev || next) && (
+    <nav class="prev-next" aria-label="Pagination">
+      {prev ? (
+        <a class="prev" href={prev.href} rel="prev">
+          <span class="label">← {prev.label}</span>
+          <span class="title">{prev.title}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {next && (
+        <a class="next" href={next.href} rel="next">
+          <span class="label">{next.label} →</span>
+          <span class="title">{next.title}</span>
+        </a>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .prev-next {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  a {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      border-color 0.2s,
+      transform 0.2s;
+  }
+  a:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .next {
+    text-align: right;
+  }
+  .label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+</style>

@@ -13,17 +13,35 @@ const posts = await getPosts();
   <p class="muted">{ui.blog.intro}</p>
   <p class="links">
     <a href="/blog/tags/">{ui.blog.allTags}</a>
-    <a href="/rss.xml">{ui.blog.rss}</a>
+    <!-- RSS bir sayfa değil, dosya: sayfa geçişi yerine normal açılsın -->
+    <a href="/rss.xml" data-astro-reload>{ui.blog.rss}</a>
   </p>
-  <div class="prose">
-    {posts.length === 0 ? <p>{ui.blog.empty}</p> : posts.map((post) => <PostItem post={post} />)}
+  <div class="post-list">
+    {
+      posts.length === 0 ? (
+        <p>{ui.blog.empty}</p>
+      ) : (
+        posts.map((post) => (
+          <div class="reveal">
+            <PostItem post={post} />
+          </div>
+        ))
+      )
+    }
   </div>
 </BaseLayout>
 
 <style>
+  h1 {
+    margin-bottom: 0.25rem;
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
   .links {
     display: flex;
     gap: 1.25rem;
     font-size: 0.9rem;
+  }
+  .post-list {
+    max-width: 70ch;
   }
 </style>

@@ -1,55 +1,175 @@
 ---
-// Tek blog yazısı
-import { Image } from 'astro:assets';
+// Tek blog yazısı: okuma ilerleme çubuğu, içindekiler, önceki/sonraki yazı
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlurImage from '../../components/BlurImage.astro';
+import PrevNext from '../../components/PrevNext.astro';
 import TagList from '../../components/TagList.astro';
 import { formatDate, readingTime } from '../../lib/format';
 import { getPosts } from '../../lib/content';
 import { ui } from '../../data/ui';
 
-// Her yazı için bir sayfa üret
+// Her yazı için bir sayfa üret. Liste en yeniden eskiye sıralı:
+// bir önceki sıradaki daha yeni, bir sonraki daha eski yazı.
 export async function getStaticPaths() {
   const posts = await getPosts();
-  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+  return posts.map((post, index) => ({
+    params: { id: post.id },
+    props: { post, newer: posts[index - 1], older: posts[index + 1] },
+  }));
 }
 
-const { post } = Astro.props;
+const { post, newer, older } = Astro.props;
 const { title, description, pubDate, cover, tags, draft } = post.data;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+
+// İçindekiler: yalnızca ## ve ### başlıkları, en az 3 başlık varsa
+const toc = headings.filter((heading) => heading.depth <= 3);
+const showToc = toc.length >= 3;
 ---
 
-<BaseLayout title={title} description={description}>
-  <article class="prose">
-    <p><a href="/blog/">{ui.blog.backToBlog}</a></p>
-    <h1>{title}</h1>
-    <p class="meta muted">
-      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-      {' · '}{readingTime(post.body)} {ui.blog.minRead}
-      {draft && <span class="draft-badge">{ui.blog.draft}</span>}
-    </p>
-    <TagList tags={tags} />
-    {cover && <Image src={cover} alt="" width={1200} class="cover" />}
-    <div class="body">
-      <Content />
-    </div>
-  </article>
+<BaseLayout title={title} description={description} image={cover} type="article" readingProgress>
+  <div class:list={['post-layout', { 'has-toc': showToc }]}>
+    <article>
+      <header class="post-header">
+        <p><a href="/blog/">{ui.blog.backToBlog}</a></p>
+        <h1>{title}</h1>
+        <p class="meta muted">
+          <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+          {' · '}{readingTime(post.body)} {ui.blog.minRead}
+          {draft && <span class="draft-badge">{ui.blog.draft}</span>}
+        </p>
+        <TagList tags={tags} />
+      </header>
+
+      {cover && <BlurImage src={cover} alt="" width={1400} class="cover" loading="eager" />}
+
+      <div class="prose body" data-prose>
+        <Content />
+      </div>
+
+      <PrevNext
+        prev={older && { href: `/blog/${older.id}/`, title: older.data.title, label: ui.blog.older }}
+        next={newer && { href: `/blog/${newer.id}/`, title: newer.data.title, label: ui.blog.newer }}
+      />
+    </article>
+
+    {
+      showToc && (
+        <aside class="toc-column">
+          <details class="toc" open>
+            <summary>{ui.blog.toc}</summary>
+            <ol>
+              {toc.map((heading) => (
+                <li class={`depth-${heading.depth}`}>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        </aside>
+      )
+    }
+  </div>
 </BaseLayout>
 
+<script>
+  // Başlıklara "#" bağlantısı ekle (bağlantıyı kopyalayıp paylaşmak için)
+  document.addEventListener('astro:page-load', () => {
+    for (const heading of document.querySelectorAll<HTMLElement>('[data-prose] :is(h2, h3)[id]')) {
+      if (heading.querySelector('.heading-anchor')) continue;
+      const link = document.createElement('a');
+      link.className = 'heading-anchor';
+      link.href = `#${heading.id}`;
+      link.textContent = '#';
+      link.setAttribute('aria-label', `Link to "${heading.textContent}"`);
+      heading.append(link);
+    }
+  });
+</script>
+
 <style>
-  .prose {
-    margin: 0 auto;
-    font-size: 1.0625rem;
+  .post-layout {
+    display: grid;
+    gap: 2rem;
+    justify-content: center;
+    grid-template-columns: minmax(0, 70ch);
+  }
+  /* Geniş ekranda içindekiler sağda, metin kaydırılırken görünür kalır */
+  @media (min-width: 72rem) {
+    .post-layout.has-toc {
+      grid-template-columns: minmax(0, 70ch) 15rem;
+    }
+    .toc {
+      position: sticky;
+      top: calc(var(--header-height) + 1.5rem);
+    }
+  }
+  /* Dar ekranda içindekiler başlığın hemen altında: yazının parçaları sıralanarak araya alınır */
+  @media (max-width: 71.99rem) {
+    .post-layout.has-toc article {
+      display: contents;
+    }
+    article > :global(*) {
+      order: 3;
+    }
+    .post-header {
+      order: 1;
+    }
+    .toc-column {
+      order: 2;
+    }
+  }
+  h1 {
+    margin: 0.5rem 0;
+    font-size: clamp(2rem, 5vw, 2.8rem);
   }
   .meta {
-    margin-top: 0;
+    margin: 0 0 0.75rem;
   }
-  .cover {
-    width: 100%;
-    border-radius: var(--radius);
-    margin: 1.5rem 0 0;
+  .post-layout :global(.cover) {
+    aspect-ratio: 16 / 9;
+    margin-top: 2rem;
+    border-radius: var(--radius-lg);
   }
   .body {
-    margin-top: 2rem;
+    margin-top: 2.5rem;
+    font-size: 1.0625rem;
+  }
+  .body > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  .toc {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    font-size: 0.9rem;
+  }
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+  }
+  .toc ol {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .toc a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--accent);
+  }
+  .depth-3 {
+    padding-left: 0.9rem;
   }
 </style>
