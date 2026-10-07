@@ -179,6 +179,7 @@ src/
 - Mobil uyumlu, klavye odağı görünür, renk kontrastı yeterli, `prefers-reduced-motion` ayarına saygılı.
 - Yazı tiplerini siteyle birlikte sun (örneğin Fontsource paketleri), dış sunucudan yükleme. Türkçe karakterleri (ğ, ş, ı, İ) destekleyen yazı tipleri seç.
 - Renk ve yazı tipi seçimlerini kullanıcıya göster, onayını al.
+- **Seçilen tema (Ekim 2026): "Studio", yalnızca koyu.** Zemin `#0e1014`, vurgu turuncu `#ff8552`; başlıklar Space Grotesk, metin Inter (`@fontsource-variable`). Renk değişkenleri `src/styles/global.css` içinde. Açık tema şimdilik yok; kullanıcı isterse eklenebilir.
 
 ## Yol haritası
 
