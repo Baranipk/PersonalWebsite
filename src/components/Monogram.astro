@@ -1,0 +1,24 @@
+---
+// Kişisel logo: adın baş harfleri, turuncu kutu içinde
+import site from '../data/site.json';
+import { initials } from '../lib/format';
+---
+
+<span class="monogram" aria-hidden="true">{initials(site.name)}</span>
+
+<style>
+  .monogram {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+</style>

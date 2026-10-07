@@ -7,6 +7,16 @@ export function formatDate(date: Date): string {
   });
 }
 
+// Adın baş harfleri (logo için): "Baran İpek" → "Bİ"
+export function initials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word[0]?.toLocaleUpperCase('tr') ?? '')
+    .join('');
+}
+
 // Okuma süresi (dakika). Dakikada yaklaşık 200 kelime varsayılır.
 export function readingTime(text = ''): number {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
