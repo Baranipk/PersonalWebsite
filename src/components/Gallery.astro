@@ -1,0 +1,63 @@
+---
+// Proje galerisi: küçük resim ızgarası, tıklayınca büyük hali açılır
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  items: { image: ImageMetadata; caption?: string }[];
+  title: string;
+}
+
+const { items, title } = Astro.props;
+
+// Her görselin büyük (en fazla 1920 px) sürümünü hazırla
+const images = await Promise.all(
+  items.map(async (item, index) => ({
+    ...item,
+    full: await getImage({ src: item.image, width: Math.min(1920, item.image.width) }),
+    alt: item.caption ?? `${title} — ${index + 1}`,
+  })),
+);
+---
+
+<ul class="gallery">
+  {
+    images.map((item) => (
+      <li>
+        <figure>
+          <a href={item.full.src} target="_blank">
+            <Image src={item.image} alt={item.alt} width={600} />
+          </a>
+          {item.caption && <figcaption class="muted">{item.caption}</figcaption>}
+        </figure>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .gallery {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    padding: 0;
+    list-style: none;
+  }
+  figure {
+    margin: 0;
+  }
+  a {
+    display: block;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  figcaption {
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+  }
+</style>

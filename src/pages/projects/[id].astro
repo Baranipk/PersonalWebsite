@@ -1,8 +1,9 @@
 ---
-// Tek proje sayfası. Bilgi kutusu, galeri ve video oynatıcı sonraki aşamalarda gelişecek.
+// Tek proje sayfası: kapak (3. aşamada video oynatıcı), açıklama, bilgi kutusu, galeri
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Gallery from '../../components/Gallery.astro';
 import { ui } from '../../data/ui';
 import { getProjects } from '../../lib/content';
 
@@ -13,7 +14,7 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { title, summary, cover, links } = project.data;
+const { title, summary, cover, links, gallery, draft } = project.data;
 const { Content } = await render(project);
 
 // Bilgi kutusundaki satırlar (boş olanlar gösterilmez)
@@ -29,38 +30,52 @@ const info = [
 
 <BaseLayout title={title} description={summary}>
   <article>
-    <h1>{title}</h1>
-    <p class="muted">{summary}</p>
-    <Image src={cover} alt="" width={1200} class="cover" />
+    <p><a href="/projects/">{ui.projects.backToProjects}</a></p>
+    <h1>
+      {title}
+      {draft && <span class="draft-badge">{ui.blog.draft}</span>}
+    </h1>
+    <p class="summary muted">{summary}</p>
 
-    <dl class="info">
-      {
-        info.map(([label, value]) => (
-          <div>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))
-      }
-    </dl>
+    <Image src={cover} alt="" width={1600} class="cover" />
 
-    <div class="prose">
-      <Content />
+    <div class="layout">
+      <div class="prose">
+        <Content />
+      </div>
+
+      <aside>
+        <dl class="info">
+          {
+            info.map(([label, value]) => (
+              <div>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        {
+          links.length > 0 && (
+            <ul class="links" aria-label={ui.projects.links}>
+              {links.map((link) => (
+                <li>
+                  <a class="button" href={link.url} target="_blank" rel="noopener">
+                    {link.label} ↗
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </aside>
     </div>
 
     {
-      links.length > 0 && (
+      gallery.length > 0 && (
         <section>
-          <h2>{ui.projects.links}</h2>
-          <ul>
-            {links.map((link) => (
-              <li>
-                <a href={link.url} target="_blank" rel="noopener">
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <h2>{ui.projects.gallery}</h2>
+          <Gallery items={gallery} title={title} />
         </section>
       )
     }
@@ -68,27 +83,80 @@ const info = [
 </BaseLayout>
 
 <style>
+  h1 {
+    margin-bottom: 0.25rem;
+  }
+  .summary {
+    font-size: 1.125rem;
+    margin-top: 0;
+  }
   .cover {
     width: 100%;
     border-radius: var(--radius);
-    margin: 1.5rem 0;
+    margin: 1.5rem 0 2rem;
+  }
+  /* Geniş ekranda açıklama solda, bilgi kutusu sağda; dar ekranda alt alta */
+  .layout {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 52rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+    }
+    aside {
+      order: 2;
+    }
+  }
+  aside {
+    order: -1;
+    align-self: start;
+  }
+  .prose > :first-child {
+    margin-top: 0;
   }
   .info {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-    gap: 1rem;
+    gap: 0.75rem;
+    margin: 0;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1rem;
   }
   dt {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--muted);
   }
   dd {
     margin: 0;
     font-weight: 600;
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .button {
+    display: block;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .button:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  section {
+    margin-top: 3rem;
   }
 </style>

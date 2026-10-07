@@ -27,6 +27,7 @@ export const ui = {
       team: 'Team',
       platform: 'Platform',
     },
+    backToProjects: '← All projects',
     links: 'Links',
     gallery: 'Gallery',
     videos: 'Videos',
