@@ -67,7 +67,8 @@ Panelden yayınlanan yazı sitede bir iki dakika sonra görünür; bu bilinen ve
 - Panelde denenmeyen bir şey daha: başlıkta `ı` harfi olan içeriğin klasör adı (`slug.encoding: ascii`) `i`'ye mi dönüşüyor, siliniyor mu?
 - Bilinen davranış: içerikte şemaya uymayan bir alan varsa `npm run dev` hiç açılmaz; panel de açılmaz. Terminaldeki hatayı oku.
 - Domain ve VDS satın alındı, henüz hiçbir kurulum yapılmadı. Sıradaki iş 5. aşama, kullanıcı "VDS'e geçelim" deyince.
-- Hâlâ bilinmeyenler: kullanıcının adı ve unvanı (YouTube kanalında "Baran İpek" görünüyor, doğrulanmadı), e-posta, domain, VDS işletim sistemi.
+- Domain: `baranipek.com` (7 Ekim 2026'da Atak Domain'den alındı). Ad sunucuları `ns1/ns2.hostingdunyam.net`, ama o sunucularda henüz DNS bölgesi yok (sorgular REFUSED). DNS adımında Hostingdünyam panelinde bölge ve A kaydı açılmalı.
+- Hâlâ bilinmeyenler: kullanıcının adı ve unvanı (YouTube kanalında "Baran İpek" görünüyor, doğrulanmadı), e-posta, VDS IP adresi ve işletim sistemi.
 
 ## Teknik notlar (Ekim 2026'da doğrulandı)
 
