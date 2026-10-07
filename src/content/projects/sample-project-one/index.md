@@ -1,5 +1,5 @@
 ---
-title: Sample Project One (example)
+title: Sample Project One (example) asd
 summary: EXAMPLE CONTENT — a short pitch for the game goes here. Replace or delete this project.
 cover: /uploads/images.jpg
 year: 2026
