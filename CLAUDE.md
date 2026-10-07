@@ -66,9 +66,14 @@ Panelden yayınlanan yazı sitede bir iki dakika sonra görünür; bu bilinen ve
 - 4. aşamada denenmeyen tek şey: panelden görsel yükleme (dosyanın içeriğin yanına kaydedilmesi). Kullanıcı ilk kez görsel yüklediğinde dosyanın yerini ve derlemeyi kontrol et.
 - Panelde denenmeyen bir şey daha: başlıkta `ı` harfi olan içeriğin klasör adı (`slug.encoding: ascii`) `i`'ye mi dönüşüyor, siliniyor mu?
 - Bilinen davranış: içerikte şemaya uymayan bir alan varsa `npm run dev` hiç açılmaz; panel de açılmaz. Terminaldeki hatayı oku.
-- Domain ve VDS satın alındı, henüz hiçbir kurulum yapılmadı. Sıradaki iş 5. aşama, kullanıcı "VDS'e geçelim" deyince.
-- Domain: `baranipek.com` (7 Ekim 2026'da Atak Domain'den alındı). Ad sunucuları `ns1/ns2.hostingdunyam.net`, ama o sunucularda henüz DNS bölgesi yok (sorgular REFUSED). DNS adımında Hostingdünyam panelinde bölge ve A kaydı açılmalı.
-- Hâlâ bilinmeyenler: kullanıcının adı ve unvanı (YouTube kanalında "Baran İpek" görünüyor, doğrulanmadı), e-posta, VDS IP adresi ve işletim sistemi.
+- 5. aşama sürüyor. Domain: `baranipek.com` (7 Ekim 2026'da Atak Domain'den alındı). Ad sunucuları `ns1/ns2.hostingdunyam.net`, ama o sunucularda henüz DNS bölgesi yok (sorgular REFUSED). Hostingdünyam panelinde bölge ve A kaydı açılmalı.
+- VDS (Hostingdünyam, İstanbul): `202.92.21.58`, Ubuntu 24.04 LTS (25.10 desteği bittiği için yeniden kuruldu). Panelde web konsolu ve kurtarma modu var: SSH kilitlenirse yedek giriş yolu.
+- VDS güvenliği yapıldı (7 Ekim 2026):
+  - Paketler güncel. Paket kaynağı `tr.archive.ubuntu.com` (ana sunucu çok yavaştı; orijinal ayar `ubuntu.sources.orig`). Otomatik güvenlik güncellemeleri açık.
+  - ufw açık: yalnızca 22/tcp, 80/tcp, 443/tcp, 443/udp.
+  - SSH: yalnızca anahtarla giriş (`/etc/ssh/sshd_config.d/10-hardening.conf`). root'a anahtarla girilir. Kullanıcının anahtarı: `C:\Users\baran\.ssh\id_ed25519`.
+  - `deploy` kullanıcısı: şifresiz, sudo yok. GitHub Actions anahtarı (`C:\Users\baran\.ssh\github_deploy_baranipek`) `rrsync` ile yalnızca `/var/www/baranipek.com` klasörüne yazabilir. rsync'te hedef yol bu klasöre göre verilir.
+- Hâlâ bilinmeyenler: kullanıcının adı ve unvanı (YouTube kanalında "Baran İpek" görünüyor, doğrulanmadı), e-posta.
 
 ## Teknik notlar (Ekim 2026'da doğrulandı)
 
