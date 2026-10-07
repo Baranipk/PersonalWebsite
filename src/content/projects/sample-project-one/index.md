@@ -14,10 +14,10 @@ links:
     url: https://itch.io
   - label: GitHub
     url: https://github.com
-# Örnek videolar (Blender açık filmleri). Kendi oynanış videolarınızla değiştirin.
+# İlk video kullanıcının kendi videosu; diğerleri örnek (Blender açık filmleri).
 videos:
-  - title: "Gameplay trailer (sample: Big Buck Bunny)"
-    url: https://www.youtube.com/watch?v=aqz-KE-bpKQ
+  - title: "Achilles — Gameplay 2026"
+    url: https://youtu.be/A76CEtoqXaw
   - title: "Level walkthrough (sample: Sintel)"
     url: https://youtu.be/eRsGyueVLvQ
   - title: "Boss fight (sample: Tears of Steel)"
