@@ -1,0 +1,62 @@
+---
+// Sayfa aşağı kaydırılınca sağ altta beliren "yukarı dön" düğmesi
+import { ui } from '../data/ui';
+---
+
+<button class="back-to-top" type="button" aria-label={ui.backToTop} title={ui.backToTop} data-back-to-top>
+  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+    <path d="M12 5l-7 7 1.4 1.4L11 8.8V20h2V8.8l4.6 4.6L19 12z" fill="currentColor"></path>
+  </svg>
+</button>
+
+<script>
+  // Pencere sayfa geçişlerinde değişmez; dinleyiciler bir kez eklenir ve o anki düğmeyi bulur
+  function updateBackToTop() {
+    document.querySelector('[data-back-to-top]')?.classList.toggle('visible', window.scrollY > 600);
+  }
+  window.addEventListener('scroll', updateBackToTop, { passive: true });
+  document.addEventListener('astro:page-load', () => {
+    updateBackToTop();
+    document.querySelector('[data-back-to-top]')?.addEventListener('click', () => {
+      const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+      // Klavye kullanıcısı için odağı sayfanın başına taşı
+      document.querySelector<HTMLElement>('.skip-link')?.focus({ preventScroll: true });
+    });
+  });
+</script>
+
+<style>
+  .back-to-top {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition:
+      opacity 0.2s,
+      transform 0.2s,
+      visibility 0.2s,
+      border-color 0.15s;
+  }
+  .back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  .back-to-top:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+</style>

@@ -86,8 +86,14 @@ const first = items[0];
 }
 
 <script>
-  // Sayfadaki her oynatıcıyı çalışır hale getir
-  for (const player of document.querySelectorAll<HTMLElement>('[data-video-player]')) {
+  // Sayfa her açıldığında (sayfa geçişlerinden sonra da) oynatıcıları hazırla
+  document.addEventListener('astro:page-load', () => {
+    for (const player of document.querySelectorAll<HTMLElement>('[data-video-player]')) {
+      setUpPlayer(player);
+    }
+  });
+
+  function setUpPlayer(player: HTMLElement) {
     const stage = player.querySelector<HTMLElement>('[data-stage]')!;
     const nowPlaying = player.querySelector<HTMLElement>('[data-now-playing]')!;
     const items = player.querySelectorAll<HTMLButtonElement>('[data-item]');
