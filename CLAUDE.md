@@ -61,10 +61,13 @@ Panelden yayınlanan yazı sitede bir iki dakika sonra görünür; bu bilinen ve
 
 ## Mevcut durum
 
-- GitHub'da repo açıldı: `README.md` var, `.gitignore` Node şablonundan oluşturuldu.
-- Domain ve VDS satın alındı, henüz hiçbir kurulum yapılmadı.
-- Site kodu henüz yok. İş 1. aşamadan başlıyor.
-- Şu an hedef, siteyi kullanıcının bilgisayarında çalışır hale getirmek. VDS işleri en sonda.
+- Repo: `Baranipk/PersonalWebsite` (bilgisayarda `D:\Website\PersonalWebsite`).
+- 1–4. aşamalar tamamlandı (Ekim 2026). Site yerelde çalışıyor, tema seçildi.
+- 4. aşamada denenmeyen tek şey: panelden görsel yükleme (dosyanın içeriğin yanına kaydedilmesi). Kullanıcı ilk kez görsel yüklediğinde dosyanın yerini ve derlemeyi kontrol et.
+- Panelde denenmeyen bir şey daha: başlıkta `ı` harfi olan içeriğin klasör adı (`slug.encoding: ascii`) `i`'ye mi dönüşüyor, siliniyor mu?
+- Bilinen davranış: içerikte şemaya uymayan bir alan varsa `npm run dev` hiç açılmaz; panel de açılmaz. Terminaldeki hatayı oku.
+- Domain ve VDS satın alındı, henüz hiçbir kurulum yapılmadı. Sıradaki iş 5. aşama, kullanıcı "VDS'e geçelim" deyince.
+- Hâlâ bilinmeyenler: kullanıcının adı ve unvanı (YouTube kanalında "Baran İpek" görünüyor, doğrulanmadı), e-posta, domain, VDS işletim sistemi.
 
 ## Teknik notlar (Ekim 2026'da doğrulandı)
 
