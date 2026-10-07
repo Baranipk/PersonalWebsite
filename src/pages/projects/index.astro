@@ -17,7 +17,7 @@ const projects = await getProjects();
     ) : (
       <ul class="grid">
         {projects.map((project) => (
-          <li>
+          <li class="reveal">
             <ProjectCard project={project} />
           </li>
         ))}
@@ -25,3 +25,13 @@ const projects = await getProjects();
     )
   }
 </BaseLayout>
+
+<style>
+  h1 {
+    margin-bottom: 0.25rem;
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+  .grid {
+    margin-top: 2rem;
+  }
+</style>

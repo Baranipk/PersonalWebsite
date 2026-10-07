@@ -1,7 +1,7 @@
 ---
-// Proje ızgarasındaki tek kart
-import { Image } from 'astro:assets';
+// Proje ızgarasındaki tek kart: kapak, rozetler, başlık, özet
 import type { CollectionEntry } from 'astro:content';
+import BlurImage from './BlurImage.astro';
 import { ui } from '../data/ui';
 
 interface Props {
@@ -9,41 +9,92 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, summary, cover, year, engine, draft } = project.data;
+const { title, summary, cover, year, engine, role, draft } = project.data;
 ---
 
 <article class="card">
-  <Image src={cover} alt="" width={640} />
+  <div class="media">
+    <BlurImage src={cover} alt="" width={720} class="cover" transitionName={`cover-${project.id}`} />
+    <ul class="badges" aria-label={ui.projects.info.engine}>
+      <li>{engine}</li>
+      <li>{year}</li>
+    </ul>
+  </div>
   <div class="body">
     <h3>
       <a href={`/projects/${project.id}/`}>{title}</a>
-    </h3>
-    <p class="meta muted">
-      {year} · {engine}
       {draft && <span class="draft-badge">{ui.blog.draft}</span>}
-    </p>
-    <p>{summary}</p>
+    </h3>
+    <p class="role">{role}</p>
+    <p class="summary muted">{summary}</p>
+    <span class="more" aria-hidden="true">{ui.projects.viewProject} →</span>
   </div>
 </article>
 
 <style>
   .card {
     position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition:
+      transform 0.25s,
+      border-color 0.25s,
+      box-shadow 0.25s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgb(255 133 82 / 0.5);
+    box-shadow: 0 18px 40px -20px rgb(255 133 82 / 0.35);
+  }
+  .media {
+    position: relative;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
   }
-  .card img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
+  .media :global(.cover) {
+    height: 100%;
+  }
+  /* Üzerine gelince kapak hafifçe büyür */
+  .media :global(.cover img) {
+    transition: transform 0.5s ease;
+  }
+  .card:hover .media :global(.cover img) {
+    transform: scale(1.05);
+  }
+  .badges {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    display: flex;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .badges li {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: rgb(14 16 20 / 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: var(--text);
+    font-size: 0.75rem;
+    font-weight: 600;
   }
   .body {
-    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.25rem 1.25rem;
   }
   h3 {
-    margin: 0 0 0.25rem;
+    margin: 0;
+    font-size: 1.25rem;
   }
   h3 a {
     color: var(--text);
@@ -62,11 +113,23 @@ const { title, summary, cover, year, engine, draft } = project.data;
   h3 a:focus-visible {
     outline: none;
   }
-  .meta {
-    margin: 0 0 0.5rem;
-    font-size: 0.9rem;
+  .role {
+    margin: 0.2rem 0 0.6rem;
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
   }
-  p {
-    margin: 0;
+  .summary {
+    margin: 0 0 1rem;
+  }
+  .more {
+    margin-top: auto;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .card:hover .more {
+    color: var(--accent);
   }
 </style>

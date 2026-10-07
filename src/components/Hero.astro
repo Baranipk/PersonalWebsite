@@ -1,0 +1,166 @@
+---
+// Ana sayfa girişi: arka planda öne çıkan projenin görseli, önde ad ve unvan
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import SocialLinks from './SocialLinks.astro';
+import site from '../data/site.json';
+import { ui } from '../data/ui';
+
+interface Props {
+  // Öne çıkan proje (sıralamada ilk proje)
+  featured?: CollectionEntry<'projects'>;
+}
+
+const { featured } = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  {
+    featured && (
+      <div class="backdrop" aria-hidden="true">
+        <Image src={featured.data.cover} alt="" width={1920} loading="eager" fetchpriority="high" />
+      </div>
+    )
+  }
+
+  <div class="content">
+    <p class="eyebrow">{site.title}</p>
+    <h1 id="hero-title">{site.name}</h1>
+    <p class="intro">{site.intro}</p>
+
+    <div class="actions">
+      <a class="button" href="/projects/">{ui.home.viewProjects} →</a>
+      {
+        site.cv && (
+          <a class="button ghost" href={site.cv} download data-astro-reload>
+            {ui.home.downloadCv}
+          </a>
+        )
+      }
+      <a class="button ghost" href={`mailto:${site.email}`}>{ui.home.contact}</a>
+    </div>
+
+    <SocialLinks withEmail={false} />
+  </div>
+
+  {
+    featured && (
+      <a class="featured" href={`/projects/${featured.id}/`}>
+        <span class="featured-label">{ui.home.featuredProject}</span>
+        <span class="featured-title">{featured.data.title} →</span>
+      </a>
+    )
+  }
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-items: end;
+    min-height: min(78vh, 46rem);
+    /* Yapışkan menünün altına uzansın */
+    margin-top: calc(-1 * var(--header-height));
+    padding: calc(var(--header-height) + 3rem) 0 3rem;
+    overflow: hidden;
+  }
+  .backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .backdrop img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.55;
+  }
+  /* Görselin üstüne koyu geçiş: metin her zaman okunur kalsın */
+  .backdrop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, var(--bg) 2%, rgb(14 16 20 / 0.6) 45%, rgb(14 16 20 / 0.35)),
+      linear-gradient(to right, rgb(14 16 20 / 0.85), transparent 70%);
+  }
+  /* Menü ve sayfa içeriğiyle aynı sol çizgide dursun */
+  .content {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  .eyebrow {
+    display: inline-block;
+    margin: 0 0 1rem;
+    padding: 0.3rem 0.85rem;
+    border: 1px solid rgb(255 133 82 / 0.4);
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(2.75rem, 9vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+  .intro {
+    max-width: 36rem;
+    margin: 1.25rem 0 1.75rem;
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    color: var(--text);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .featured {
+    position: absolute;
+    right: max(1rem, calc((100% - var(--max-width)) / 2 + 1rem));
+    bottom: 3rem;
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: rgb(14 16 20 / 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+  .featured:hover {
+    border-color: var(--accent);
+  }
+  .featured-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .featured-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+  }
+  /* Dar ekranda öne çıkan proje kutusu metnin altına iner */
+  @media (max-width: 60rem) {
+    .featured {
+      position: static;
+      justify-self: start;
+      margin: 1.5rem 1rem 0;
+    }
+    .hero {
+      align-items: end;
+    }
+  }
+</style>
