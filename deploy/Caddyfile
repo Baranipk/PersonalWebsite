@@ -1,0 +1,32 @@
+# Sunucudaki Caddy ayarı. Sunucudaki yeri: /etc/caddy/Caddyfile
+# Değiştirdikten sonra sunucuya kopyala ve "systemctl reload caddy" çalıştır.
+# Caddy HTTPS sertifikasını kendisi alır ve yeniler.
+
+baranipek.com {
+	root * /var/www/baranipek.com
+	encode zstd gzip
+	file_server
+
+	# Astro'nun /_astro/ altındaki dosyalarının adı içerik değişince değişir; uzun süre önbelleklenebilir
+	@assets path /_astro/*
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+
+	# Güvenlik başlıkları
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	# Bulunamayan sayfalarda sitenin kendi 404 sayfasını göster
+	handle_errors {
+		rewrite * /404.html
+		file_server
+	}
+}
+
+# www ile gelenleri asıl adrese yönlendir
+www.baranipek.com {
+	redir https://baranipek.com{uri} permanent
+}
