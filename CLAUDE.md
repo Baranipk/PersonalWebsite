@@ -73,6 +73,10 @@ Panelden yayınlanan yazı sitede bir iki dakika sonra görünür; bu bilinen ve
   - ufw açık: yalnızca 22/tcp, 80/tcp, 443/tcp, 443/udp.
   - SSH: yalnızca anahtarla giriş (`/etc/ssh/sshd_config.d/10-hardening.conf`). root'a anahtarla girilir. Kullanıcının anahtarı: `C:\Users\baran\.ssh\id_ed25519`.
   - `deploy` kullanıcısı: şifresiz, sudo yok. GitHub Actions anahtarı (`C:\Users\baran\.ssh\github_deploy_baranipek`) `rrsync` ile yalnızca `/var/www/baranipek.com` klasörüne yazabilir. rsync'te hedef yol bu klasöre göre verilir.
+- Caddy 2.11 (resmi depodan): ayarı repoda `deploy/Caddyfile`, sunucuda `/etc/caddy/Caddyfile`. HTTPS sertifikası Let's Encrypt, Caddy yeniler. `www` asıl adrese yönlenir.
+- DNS: Hostingdünyam DNS (`dns1/dns2.hostingdunyam.net`); `@` A kaydı `202.92.21.58`, `www` CNAME `baranipek.com`. Diğer kayıtlar sağlayıcının e-posta şablonu.
+- Otomatik yayın: `.github/workflows/deploy.yml`. GitHub Secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_KNOWN_HOSTS`. `gh` kurulu değil; çalışma durumu herkese açık API'den okunabilir (`api.github.com/repos/Baranipk/PersonalWebsite/actions/runs`).
+- Sunucuda SSH `LogLevel VERBOSE` (`/etc/ssh/sshd_config.d/20-logging.conf`): giriş denemelerinde anahtar parmak izi görünür.
 - Hâlâ bilinmeyenler: kullanıcının adı ve unvanı (YouTube kanalında "Baran İpek" görünüyor, doğrulanmadı), e-posta.
 
 ## Teknik notlar (Ekim 2026'da doğrulandı)
