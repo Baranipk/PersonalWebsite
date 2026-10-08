@@ -1,0 +1,131 @@
+---
+// Ana sayfa girişinin arka planı: piksel ızgarası.
+// Fareye yakın noktalar turuncu yanar, ızgaradan yavaşça çapraz bir ışık dalgası geçer.
+// Hareketi azalt ayarı açıksa durağan kalır; ekranda görünmezken çizim durur.
+---
+
+<div class="hero-effect" aria-hidden="true" data-hero-effect>
+  <canvas></canvas>
+</div>
+
+<script>
+  let stop: (() => void) | undefined;
+
+  document.addEventListener('astro:page-load', () => {
+    const el = document.querySelector<HTMLElement>('[data-hero-effect]');
+    if (el) stop = startGrid(el);
+  });
+
+  // Sayfadan ayrılırken çizim döngüsünü durdur
+  document.addEventListener('astro:before-swap', () => {
+    stop?.();
+    stop = undefined;
+  });
+
+  function startGrid(el: HTMLElement) {
+    const canvas = el.querySelector('canvas')!;
+    const ctx = canvas.getContext('2d')!;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pointer = { x: -9999, y: -9999 };
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+
+    function resize() {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      width = el.clientWidth;
+      height = el.clientHeight;
+      canvas.width = width * ratio;
+      canvas.height = height * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      if (reduceMotion) draw(0); // durağan kareyi yeniden çiz
+    }
+
+    // Izgarayı bir kez çiz. t: saniye cinsinden zaman
+    function draw(t: number) {
+      ctx.clearRect(0, 0, width, height);
+      const gap = 26;
+      for (let x = gap / 2; x < width; x += gap) {
+        for (let y = gap / 2; y < height; y += gap) {
+          const wave = (Math.sin((x + y) / 140 - t * 1.2) + 1) / 2; // 0..1
+          const near = Math.max(0, 1 - Math.hypot(x - pointer.x, y - pointer.y) / 180); // fareye yakınlık 0..1
+          const size = 1.2 + near * 2.2 + wave * 0.6;
+          const alpha = 0.08 + wave * 0.1 + near * 0.8;
+          ctx.fillStyle = near > 0.05 ? `rgba(255, 133, 82, ${alpha})` : `rgba(233, 235, 240, ${alpha})`;
+          ctx.fillRect(x - size / 2, y - size / 2, size, size);
+        }
+      }
+    }
+
+    function loop(time: number) {
+      draw(time / 1000);
+      frame = requestAnimationFrame(loop);
+    }
+
+    function start() {
+      cancelAnimationFrame(frame);
+      if (!reduceMotion) frame = requestAnimationFrame(loop);
+    }
+
+    function pause() {
+      cancelAnimationFrame(frame);
+    }
+
+    const hero = el.parentElement!;
+    const onMove = (event: PointerEvent) => {
+      const rect = el.getBoundingClientRect();
+      pointer.x = event.clientX - rect.left;
+      pointer.y = event.clientY - rect.top;
+      if (reduceMotion) draw(0);
+    };
+    const onLeave = () => {
+      pointer.x = pointer.y = -9999;
+      if (reduceMotion) draw(0);
+    };
+
+    // Ekranda değilse ya da sekme arka plandaysa çizmeyi bırak
+    let onScreen = true;
+    const observer = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (onScreen && !document.hidden) start();
+      else pause();
+    });
+    const onVisibility = () => (onScreen && !document.hidden ? start() : pause());
+
+    resize();
+    draw(0);
+    start();
+    window.addEventListener('resize', resize);
+    hero.addEventListener('pointermove', onMove);
+    hero.addEventListener('pointerleave', onLeave);
+    document.addEventListener('visibilitychange', onVisibility);
+    observer.observe(el);
+
+    return () => {
+      pause();
+      observer.disconnect();
+      window.removeEventListener('resize', resize);
+      hero.removeEventListener('pointermove', onMove);
+      hero.removeEventListener('pointerleave', onLeave);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }
+</script>
+
+<style>
+  .hero-effect {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    /* Alt kenara doğru ızgara şeffaflaşır; sayfa arka planıyla dikiş izi kalmaz */
+    -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent);
+    mask-image: linear-gradient(to bottom, black 55%, transparent);
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
