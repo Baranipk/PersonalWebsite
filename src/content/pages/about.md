@@ -2,7 +2,7 @@
 title: About Me
 ---
 
-**Hi, I'm [Baran İpek].**
+**Hi, I'm Baran İpek.**
 
 I'm a final-year Digital Game Design student focused on game design and gameplay programming, and I take the lead role in our school projects. So far I've joined 4 game jams and built 1 mobile and 3 PC games, working with Unity 6 and Aseprite.
 
@@ -12,4 +12,4 @@ Alongside game development, I'm active in esports. I helped run my campus esport
 
 These experiences taught me how to manage a team and solve problems; leadership is my strongest side in group work.
 
-I plan to graduate in July 2027 and I'm looking for an internship as a Game Designer, in Production, or as a Game Developer. If you'd like to get in touch, you can reach me at [baranipk6@gmail.com].
+I plan to graduate in July 2027 and I'm looking for an internship as a Game Designer, in Production, or as a Game Developer. If you'd like to get in touch, you can reach me at baranipk6@gmail.com.
