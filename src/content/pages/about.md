@@ -1,5 +1,5 @@
 ---
-title: About
+title: About Me
 ---
 
 **Hi, I'm [Baran İpek].**
