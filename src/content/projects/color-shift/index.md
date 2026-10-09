@@ -2,7 +2,7 @@
 title: Color Shift
 summary: A color-based puzzle platformer prototype, built by a team of three for the Game Engines 2 course at İstinye University.
 cover: color-shift-cover-2x.png
-year: 2026
+year: 2025
 role: Game Designer & Programmer
 engine: Unity 6.3 LTS
 duration: 2 Months
